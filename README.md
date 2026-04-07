@@ -24,7 +24,7 @@ Prof. Ernesto Manuel Distinto Ufuene
 ## Tecnologias
 
 - Python
-- Framework web (a definir)
+- Framework web (Django)
 - Banco de dados relacional (SQLite)
 - Git/GitHub para controle de versão
 
