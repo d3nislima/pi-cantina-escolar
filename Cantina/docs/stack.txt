@@ -1,0 +1,10 @@
+Backend: Django
+Framework web de alto nível em Python, utilizado para construção da aplicação, gerenciamento de rotas, lógica de negócio e integração com o banco de dados.
+Validação de Dados: Pydantic
+Utilizada para validação e estruturação de dados, garantindo integridade nas entradas e saídas do sistema.
+Containerização: Docker
+Empregado para padronizar o ambiente de execução, facilitando a implantação em diferentes máquinas com requisitos mínimos de hardware.
+Banco de Dados: Banco relacional local (ex: SQLite ou PostgreSQL)
+Armazenamento dos dados de estoque, movimentações e registros operacionais de forma estruturada.
+Backup de Dados: Google Drive
+Utilizado como solução de backup externo, garantindo redundância e proteção contra perda de dados.
