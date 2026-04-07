@@ -1,0 +1,35 @@
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Ambientes virtuais
+venv/
+env/
+.venv/
+
+# Banco de dados SQLite
+*.sqlite3
+db.sqlite3
+
+# Variáveis de ambiente
+.env
+
+# IDE e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos de log
+*.log
