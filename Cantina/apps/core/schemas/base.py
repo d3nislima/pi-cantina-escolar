@@ -7,6 +7,8 @@ from pydantic import BaseModel, ConfigDict, Field
 class CantinaSchema(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
+        populate_by_name=True,
+        use_enum_values=True,
         str_strip_whitespace=True,
         validate_assignment=True,
     )

@@ -8,8 +8,12 @@
 
 ## Vendas
 
-- Uma venda nasce com `itens`, `forma_pagamento` e `data_venda`.
+- Uma venda nasce com `itens`, `forma_pagamento`, `vendido_em`, `janela_atendimento` e `modo_atendimento`.
+- `vendido_em` guarda o instante real da venda para permitir leitura precisa em relatorios.
+- `janela_atendimento` marca se a venda ocorreu em recreio, almoco, fora de intervalo ou evento especial.
+- `modo_atendimento` permite otimizar a tela para venda rapida, pedido antecipado ou fluxo normal.
 - Ao confirmar a venda, o sistema calcula valor bruto, descontos, total, troco e gera a saida de estoque.
+- O cadastro de item aceita `produto_id`, `produto_codigo` ou `produto_nome`, para reduzir digitação no atendimento.
 
 ## Agendamento
 
