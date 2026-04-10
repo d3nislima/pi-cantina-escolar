@@ -23,25 +23,109 @@ Prof. Ernesto Manuel Distinto Ufuene
 
 ## Tecnologias
 
-- Python
-- Framework web (Django)
-- Banco de dados relacional (SQLite)
-- Git/GitHub para controle de versão
+- Python 3.12+
+- Django 4.2
+- Pydantic 2.12
+- SQLite
+- Git/GitHub
 
-## Estrutura do repositório
+## Como instalar
+
+### Pré-requisitos
+
+- Python 3.10 ou superior instalado
+- Git instalado
+
+### Setup automático
+
+```bash
+git clone https://github.com/d3nislima/pi-cantina-escolar.git
+cd pi-cantina-escolar
+chmod +x setup.sh
+./setup.sh
+```
+
+### Setup manual
+
+```bash
+git clone https://github.com/d3nislima/pi-cantina-escolar.git
+cd pi-cantina-escolar
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r Cantina/requirements.txt
+cd Cantina
+python3 manage.py migrate
+python3 manage.py runserver
+```
+
+Acesse http://127.0.0.1:8000/ no navegador.
+
+## Fluxo de trabalho no Git
+
+### Branches
+
+- **main** — versão estável do projeto. 
+- **dev** — branch de desenvolvimento. 
+- **feature/nome-da-tarefa** — branch individual de cada tarefa.
+
+### Como trabalhar em uma tarefa
+
+1. Atualize sua dev local:
+```bash
+git checkout dev
+git pull origin dev
+```
+
+2. Crie sua branch a partir da dev:
+```bash
+git checkout -b feature/nome-da-tarefa
+```
+
+3. Faça suas alterações e commits:
+```bash
+git add .
+git commit -m "tipo: descrição curta do que foi feito"
+```
+
+4. Envie para o GitHub:
+```bash
+git push origin feature/nome-da-tarefa
+```
+
+5. Abra um Pull Request no GitHub de `feature/nome-da-tarefa` para `dev`.
+
+6. Outro membro do grupo revisa e aprova o merge.
+
+### Convenção de commits
+
+Usar o prefixo para identificar o tipo de alteração:
+
+- **feat:** nova funcionalidade (ex: `feat: criar model Produto`)
+- **fix:** correção de bug (ex: `fix: corrigir calculo do estoque`)
+- **docs:** documentação (ex: `docs: atualizar README`)
+- **style:** formatação, CSS (ex: `style: ajustar layout do dashboard`)
+- **refactor:** refatoração sem mudar funcionalidade
+- **test:** adição ou correção de testes
+
+## Estrutura do projeto
 
 ```
 pi-cantina-escolar/
-├── docs/           # Documentos do projeto (relatórios, diagramas, atas)
-├── README.md       # Este arquivo
-└── .gitignore      # Arquivos ignorados pelo Git
+├── setup.sh                 # Script de setup automático
+├── README.md                # Este arquivo
+├── .gitignore               # Arquivos ignorados pelo Git
+└── Cantina/                 # Projeto Django
+    ├── manage.py            # Comando principal do Django
+    ├── requirements.txt     # Dependências do projeto
+    ├── Cantina/             # Configurações (settings, urls)
+    ├── apps/
+    │   ├── core/            # App base (dashboard, templates)
+    │   ├── estoque/         # Cadastro de produtos e movimentações
+    │   ├── vendas/          # Registro de vendas
+    │   ├── relatorios/      # Relatórios e indicadores
+    │   └── agendamento/     # Fornecedores e compras
+    ├── templates/           # Templates HTML
+    ├── static/              # CSS e arquivos estáticos
+    ├── docs/                # Documentação técnica
+    └── Sprints/             # Planejamento de sprints
 ```
-
-A estrutura da aplicação será adicionada após definição do framework.
-
-## Como contribuir
-
-1. Clone o repositório: `git clone https://github.com/SEU_USUARIO/pi-cantina-escolar.git`
-2. Crie uma branch para sua tarefa: `git checkout -b nome-da-sua-branch`
-3. Faça suas alterações e commit: `git commit -m "descrição do que foi feito"`
-4. Envie para o GitHub: `git push origin nome-da-sua-branch`
