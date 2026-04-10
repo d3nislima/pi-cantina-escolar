@@ -42,3 +42,40 @@ body {
   padding-left: 20px;
   color: var(--muted);
 }
+
+/* Header e navegação */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-logo {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.app-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.app-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.app-nav a:hover {
+  color: var(--accent);
+}
