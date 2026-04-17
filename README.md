@@ -52,8 +52,7 @@ git clone https://github.com/d3nislima/pi-cantina-escolar.git
 cd pi-cantina-escolar
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r Cantina/requirements.txt
-cd Cantina
+pip install -r requirements.txt
 python3 manage.py migrate
 python3 manage.py runserver
 ```
@@ -114,8 +113,7 @@ pi-cantina-escolar/
 ├── setup.sh                 # Script de setup automático
 ├── README.md                # Este arquivo
 ├── .gitignore               # Arquivos ignorados pelo Git
-└── Cantina/                 # Projeto Django
-    ├── manage.py            # Comando principal do Django
+├── manage.py            # Comando principal do Django
     ├── requirements.txt     # Dependências do projeto
     ├── Cantina/             # Configurações (settings, urls)
     ├── apps/
