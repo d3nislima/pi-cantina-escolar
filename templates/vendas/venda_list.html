@@ -4,7 +4,53 @@
 
 {% block content %}
 <section class="dashboard">
-  <h1>Vendas</h1>
-  <p>Registro e histórico de vendas. (em desenvolvimento)</p>
+  <div class="page-header">
+    <h1>Vendas</h1>
+    <a href="{% url 'venda-create' %}" class="btn btn-primary">+ Nova Venda</a>
+  </div>
+
+  {% if vendas %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Itens</th>
+        <th>Janela</th>
+        <th>Pagamento</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for venda in vendas %}
+      <tr>
+        <td>{{ venda.vendido_em|date:"d/m/Y H:i" }}</td>
+        <td>
+          {% for item in venda.itens.all %}
+            {{ item.produto.nome }} ({{ item.quantidade }}){% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </td>
+        <td>{{ venda.janela_atendimento|default:"-" }}</td>
+        <td>{{ venda.get_forma_pagamento_display }}</td>
+        <td>R$ {{ venda.valor_total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm">← Anterior</a>
+    {% endif %}
+    <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm">Próxima →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <p class="text-muted">Nenhuma venda registrada ainda.</p>
+  {% endif %}
 </section>
 {% endblock %}

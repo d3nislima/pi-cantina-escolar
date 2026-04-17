@@ -316,3 +316,52 @@ body {
   color: var(--muted);
   margin: 0 0 8px;
 }
+
+/* Layout de vendas */
+.venda-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.carrinho-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 2px solid var(--border);
+  margin: 12px 0 20px;
+  font-size: 16px;
+}
+
+.carrinho-total strong {
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.finalizar-form {
+  max-width: 100%;
+}
+
+.adicionar-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.input-qty {
+  width: 60px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.btn-perigo {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-perigo:hover {
+  background: #fecaca;
+}

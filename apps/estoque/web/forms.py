@@ -12,7 +12,6 @@ class ProdutoForm(forms.ModelForm):
             "codigo_barras",
             "categoria",
             "unidade_medida",
-            "preco_custo",
             "preco_venda",
             "estoque_minimo",
             "ativo",

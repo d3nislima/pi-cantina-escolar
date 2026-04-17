@@ -16,6 +16,7 @@
         <th>Nome</th>
         <th>Categoria</th>
         <th>Unidade</th>
+        <th>Custo</th>
         <th>Preço de Venda</th>
         <th>Estoque Atual</th>
         <th>Estoque Mínimo</th>
@@ -29,6 +30,7 @@
         <td>{{ produto.nome }}</td>
         <td>{{ produto.categoria }}</td>
         <td>{{ produto.get_unidade_medida_display }}</td>
+        <td>R$ {{ produto.preco_custo }}</td>
         <td>R$ {{ produto.preco_venda }}</td>
         <td {% if produto.estoque_atual <= produto.estoque_minimo %}class="text-alerta"{% endif %}>
           {{ produto.estoque_atual }}
