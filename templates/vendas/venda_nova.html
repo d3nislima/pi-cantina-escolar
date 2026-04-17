@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Cantina | Nova Venda{% endblock %}
+
+{% block content %}
+<div class="venda-layout">
+
+  <!-- Painel esquerdo: produtos -->
+  <section class="card">
+    <h2 class="card-titulo">Produtos</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Preço</th>
+          <th>Estoque</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for produto in produtos %}
+        <tr>
+          <td>{{ produto.nome }}</td>
+          <td>R$ {{ produto.preco_venda }}</td>
+          <td {% if produto.estoque_atual <= produto.estoque_minimo %}class="text-alerta"{% endif %}>
+            {{ produto.estoque_atual }}
+          </td>
+          <td>
+            <form method="post" action="{% url 'venda-adicionar-item' %}">
+              {% csrf_token %}
+              <input type="hidden" name="produto_id" value="{{ produto.pk }}">
+              <div class="adicionar-item">
+                <input type="number" name="quantidade" value="1" min="1" step="1" class="form-input input-qty">
+                <button type="submit" class="btn btn-primary btn-sm">+</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Painel direito: carrinho + finalizar -->
+  <aside class="card carrinho">
+    <h2 class="card-titulo">Carrinho</h2>
+
+    {% if carrinho %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Qtd</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in carrinho %}
+        <tr>
+          <td>{{ item.nome }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td>R$ {{ item.subtotal }}</td>
+          <td>
+            <form method="post" action="{% url 'venda-remover-item' %}">
+              {% csrf_token %}
+              <input type="hidden" name="produto_id" value="{{ item.produto_id }}">
+              <button type="submit" class="btn btn-sm btn-perigo">×</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="carrinho-total">
+      <span>Total</span>
+      <strong>R$ {{ total }}</strong>
+    </div>
+
+    <form method="post" action="{% url 'venda-finalizar' %}" class="form finalizar-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Janela de Atendimento</label>
+        <select name="janela_atendimento" class="form-input">
+          <option value="">– Fora de intervalo –</option>
+          {% for janela in janelas %}
+          <option value="{{ janela.pk }}" {% if janela.pk == janela_atual_id %}selected{% endif %}>
+            {{ janela }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Forma de Pagamento</label>
+        <select name="forma_pagamento" id="forma-pagamento" class="form-input" required>
+          <option value="">Selecione...</option>
+          {% for valor, label in formas_pagamento %}
+          <option value="{{ valor }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" id="campo-recebido" style="display:none">
+        <label class="form-label">Valor Recebido</label>
+        <input type="number" name="valor_recebido" step="0.01" min="0" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Modo de Atendimento</label>
+        <select name="modo_atendimento" class="form-input">
+          {% for valor, label in modos_atendimento %}
+          <option value="{{ valor }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-destaque">Finalizar Venda</button>
+    </form>
+
+    {% else %}
+    <p class="text-muted">Nenhum item adicionado.</p>
+    {% endif %}
+
+    <div style="margin-top: 16px">
+      <a href="{% url 'venda-list' %}" class="btn">Cancelar</a>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  const formaPagamento = document.getElementById("forma-pagamento");
+  const campoRecebido = document.getElementById("campo-recebido");
+
+  formaPagamento.addEventListener("change", function () {
+    campoRecebido.style.display = this.value === "dinheiro" ? "block" : "none";
+  });
+</script>
+{% endblock %}

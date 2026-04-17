@@ -9,7 +9,7 @@
   <section class="card">
     <h2 class="card-titulo">Acesso Rápido</h2>
     <div class="atalhos">
-      <a class="btn btn-destaque btn-desabilitado">+ Nova Venda</a>
+      <a href="{% url 'venda-create' %}" class="btn btn-destaque">+ Nova Venda</a>
       <a href="{% url 'movimentacao-create' %}" class="btn">+ Nova Movimentação</a>
       <a href="{% url 'produto-create' %}" class="btn">+ Novo Produto</a>
     </div>
