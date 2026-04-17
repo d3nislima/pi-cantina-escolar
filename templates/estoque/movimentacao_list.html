@@ -1,10 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Cantina | Estoque{% endblock %}
+{% block title %}Cantina | Movimentações{% endblock %}
 
 {% block content %}
 <section class="dashboard">
-  <h1>Movimentações de estoque</h1>
-  <p>Estado atual e histórico de entradas e saídas. (em desenvolvimento)</p>
+  <div class="page-header">
+    <h1>Movimentações de Estoque</h1>
+    <a href="{% url 'movimentacao-create' %}" class="btn btn-primary">+ Nova Movimentação</a>
+  </div>
+
+  {% if movimentacoes %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Produto</th>
+        <th>Operação</th>
+        <th>Origem</th>
+        <th>Quantidade</th>
+        <th>Saldo Antes</th>
+        <th>Saldo Depois</th>
+        <th>Observação</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in movimentacoes %}
+      <tr>
+        <td>{{ m.data_movimento|date:"d/m/Y H:i" }}</td>
+        <td>{{ m.produto.nome }}</td>
+        <td>{{ m.get_operacao_display }}</td>
+        <td>{{ m.get_origem_display }}</td>
+        <td>{{ m.quantidade }}</td>
+        <td>{{ m.saldo_antes }}</td>
+        <td>{{ m.saldo_depois }}</td>
+        <td>{{ m.observacao|default:"-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm">← Anterior</a>
+    {% endif %}
+    <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm">Próxima →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <p class="text-muted">Nenhuma movimentação registrada ainda.</p>
+  {% endif %}
 </section>
 {% endblock %}

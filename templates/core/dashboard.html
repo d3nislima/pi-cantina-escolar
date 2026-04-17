@@ -1,16 +1,68 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}Cantina | Painel{% endblock %}
 
 {% block content %}
-<section class="dashboard">
-  <h1>Gestão da Cantina Escolar</h1>
-  <p>Base inicial com módulos de vendas, estoque, relatórios e agendamento.</p>
-  <ul class="dashboard-notes">
-    <li>Venda registrada com instante real, janela de atendimento e modo rápido.</li>
-    <li>Fluxo pensado para atendimento em recreio, almoço e vendas fora de intervalo.</li>
-    <li>Entrada de item com referência curta: id, código ou nome.</li>
-  </ul>
-</section>
+<div class="dashboard-grid">
+
+  <!-- Bloco 1: Acesso rápido -->
+  <section class="card">
+    <h2 class="card-titulo">Acesso Rápido</h2>
+    <div class="atalhos">
+      <a class="btn btn-destaque btn-desabilitado">+ Nova Venda</a>
+      <a href="{% url 'movimentacao-create' %}" class="btn">+ Nova Movimentação</a>
+      <a href="{% url 'produto-create' %}" class="btn">+ Novo Produto</a>
+    </div>
+  </section>
+
+  <!-- Bloco 2: Resumo do dia -->
+  <section class="card">
+    <h2 class="card-titulo">Hoje</h2>
+    <div class="resumo-grid">
+      <div class="resumo-item">
+        <span class="resumo-valor">{{ vendas_hoje|default:"0" }}</span>
+        <span class="resumo-label">Vendas</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-valor">{{ entradas_hoje }}</span>
+        <span class="resumo-label">Entradas</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-valor">{{ saidas_hoje }}</span>
+        <span class="resumo-label">Saídas</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bloco 3: Estoque -->
+  <section class="card">
+    <h2 class="card-titulo">Estoque</h2>
+    <p class="resumo-total">{{ total_produtos }} produto{{ total_produtos|pluralize }} ativo{{ total_produtos|pluralize }}</p>
+
+    {% if produtos_criticos %}
+    <h3 class="card-subtitulo">Abaixo do mínimo</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Atual</th>
+          <th>Mínimo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for produto in produtos_criticos %}
+        <tr>
+          <td>{{ produto.nome }}</td>
+          <td class="text-alerta">{{ produto.estoque_atual }}</td>
+          <td>{{ produto.estoque_minimo }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nenhum produto em situação crítica.</p>
+    {% endif %}
+  </section>
+
+</div>
 {% endblock %}
