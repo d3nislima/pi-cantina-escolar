@@ -61,6 +61,8 @@ class MovimentacaoCreateView(CreateView):
 
         if movimento.operacao == "entrada":
             produto.estoque_atual += movimento.quantidade
+            if movimento.origem == "compra":
+                produto.preco_custo = movimento.valor_unitario
         elif movimento.operacao == "saida":
             produto.estoque_atual -= movimento.quantidade
         else:
