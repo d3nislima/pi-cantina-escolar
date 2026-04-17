@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Cantina | Nova Movimentação{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Nova Movimentação</h1>
+    <a href="{% url 'movimentacao-list' %}" class="btn">Voltar</a>
+  </div>
+
+  <form method="post" class="form">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+      {{ field }}
+      {% if field.name == "produto" %}
+        <span id="estoque-info" class="form-hint"></span>
+      {% endif %}
+      {% if field.errors %}
+        {% for error in field.errors %}
+          <span class="form-error">{{ error }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Registrar</button>
+      <a href="{% url 'movimentacao-list' %}" class="btn">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+<script>
+  // Estoque atual por produto
+  const estoques = {
+    {% for produto in form.fields.produto.queryset %}
+      "{{ produto.pk }}": { estoque: "{{ produto.estoque_atual }}", unidade: "{{ produto.get_unidade_medida_display }}" },
+    {% endfor %}
+  };
+
+  // Origens válidas por operação
+  const origensPorOperacao = {
+    "entrada": ["compra", "doacao"],
+    "saida":   ["venda", "perda"],
+    "ajuste":  ["inventario", "ajuste_manual"],
+  };
+
+  const selectProduto  = document.getElementById("{{ form.produto.id_for_label }}");
+  const selectOperacao = document.getElementById("{{ form.operacao.id_for_label }}");
+  const selectOrigem   = document.getElementById("{{ form.origem.id_for_label }}");
+  const info           = document.getElementById("estoque-info");
+
+  // Atualiza o hint de estoque ao trocar produto
+  function atualizarInfo() {
+    const dados = estoques[selectProduto.value];
+    info.textContent = dados ? `Estoque atual: ${dados.estoque} ${dados.unidade}` : "";
+  }
+
+  // Guarda todas as opções originais antes de qualquer filtro
+  const todasOrigens = Array.from(selectOrigem.options);
+
+  // Reconstrói o select de origem com apenas as opções válidas para a operação
+  function filtrarOrigens() {
+    const validas = origensPorOperacao[selectOperacao.value] || [];
+    selectOrigem.innerHTML = "";
+    todasOrigens
+      .filter(opt => opt.value === "" || validas.includes(opt.value))
+      .forEach(opt => selectOrigem.appendChild(opt.cloneNode(true)));
+  }
+
+  selectProduto.addEventListener("change", atualizarInfo);
+  selectOperacao.addEventListener("change", filtrarOrigens);
+
+  atualizarInfo();
+  filtrarOrigens();
+</script>
+{% endblock %}
