@@ -4,9 +4,9 @@
 
 Projeto Integrador em Computação I — UNIVESP (2026)
 
-Desenvolvimento de uma aplicação web para controle de estoque da cantina escolar Delícias da Mamãe, localizada na ETEC Santa Isabel, no município de Santa Isabel - SP.
+Desenvolvimento de uma aplicação web para controle de estoque da cantina escolar **Delícias da Mamãe**, localizada na ETEC Santa Isabel, no município de Santa Isabel - SP.
 
-O sistema tem como objetivo substituir o controle manual atualmente utilizado, permitindo o registro de entradas e saídas de produtos, acompanhamento do estoque disponível e geração de relatórios.
+O sistema substitui o controle manual atualmente utilizado, permitindo o registro de entradas e saídas de produtos, acompanhamento do estoque disponível, registro de vendas e geração de relatórios.
 
 ## Integrantes
 
@@ -17,24 +17,19 @@ O sistema tem como objetivo substituir o controle manual atualmente utilizado, p
 - Onofre Silva do Nascimento
 - Paulo José da Silva Neto
 
-## Orientador
-
-Prof. Ernesto Manuel Distinto Ufuene
+**Orientador:** Prof. Ernesto Manuel Distinto Ufuene
 
 ## Tecnologias
 
 - Python 3.12+
-- Django 4.2
-- Pydantic 2.12
+- Django 4.2.29
+- Pydantic 2.12.5
 - SQLite
 - Git/GitHub
 
 ## Como instalar
 
-### Pré-requisitos
-
-- Python 3.10 ou superior instalado
-- Git instalado
+**Pré-requisitos:** Python 3.10+ e Git instalados.
 
 ### Setup automático
 
@@ -59,71 +54,72 @@ python3 manage.py runserver
 
 Acesse http://127.0.0.1:8000/ no navegador.
 
-## Fluxo de trabalho no Git
-
-### Branches
-
-- **main** — versão estável do projeto. 
-- **dev** — branch de desenvolvimento. 
-- **feature/nome-da-tarefa** — branch individual de cada tarefa.
-
-### Como trabalhar em uma tarefa
-
-1. Atualize sua dev local:
-```bash
-git checkout dev
-git pull origin dev
-```
-
-2. Crie sua branch a partir da dev:
-```bash
-git checkout -b feature/nome-da-tarefa
-```
-
-3. Faça suas alterações e commits:
-```bash
-git add .
-git commit -m "tipo: descrição curta do que foi feito"
-```
-
-4. Envie para o GitHub:
-```bash
-git push origin feature/nome-da-tarefa
-```
-
-5. Abra um Pull Request no GitHub de `feature/nome-da-tarefa` para `dev`.
-
-6. Outro membro do grupo revisa e aprova o merge.
-
-### Convenção de commits
-
-Usar o prefixo para identificar o tipo de alteração:
-
-- **feat:** nova funcionalidade (ex: `feat: criar model Produto`)
-- **fix:** correção de bug (ex: `fix: corrigir calculo do estoque`)
-- **docs:** documentação (ex: `docs: atualizar README`)
-- **style:** formatação, CSS (ex: `style: ajustar layout do dashboard`)
-- **refactor:** refatoração sem mudar funcionalidade
-- **test:** adição ou correção de testes
-
 ## Estrutura do projeto
 
 ```
 pi-cantina-escolar/
 ├── setup.sh                 # Script de setup automático
-├── README.md                # Este arquivo
-├── .gitignore               # Arquivos ignorados pelo Git
-├── manage.py            # Comando principal do Django
-    ├── requirements.txt     # Dependências do projeto
-    ├── Cantina/             # Configurações (settings, urls)
-    ├── apps/
-    │   ├── core/            # App base (dashboard, templates)
-    │   ├── estoque/         # Cadastro de produtos e movimentações
-    │   ├── vendas/          # Registro de vendas
-    │   ├── relatorios/      # Relatórios e indicadores
-    │   └── agendamento/     # Fornecedores e compras
-    ├── templates/           # Templates HTML
-    ├── static/              # CSS e arquivos estáticos
-    ├── docs/                # Documentação técnica
-    └── Sprints/             # Planejamento de sprints
+├── manage.py                # Comando principal do Django
+├── requirements.txt         # Dependências do projeto
+├── README.md
+├── .gitignore
+├── Cantina/                 # Configurações Django (settings, urls)
+├── apps/
+│   ├── core/                # Dashboard e base
+│   ├── estoque/             # Produtos e movimentações
+│   ├── vendas/              # Registro de vendas
+│   ├── relatorios/          # Relatórios e indicadores
+│   └── agendamento/         # Fornecedores e compras
+├── templates/               # Templates HTML
+├── static/                  # CSS e arquivos estáticos
+└── docs/                    # Documentação técnica e sprints
 ```
+
+## Módulos
+
+| Módulo | Descrição |
+|--------|-----------|
+| `core` | Dashboard principal |
+| `estoque` | Cadastro de produtos, categorias e movimentações de estoque |
+| `vendas` | Registro de vendas e itens vendidos |
+| `relatorios` | Relatórios e indicadores |
+| `agendamento` | Fornecedores, contas a pagar e entregas agendadas |
+
+## Fluxo de trabalho no Git
+
+### Branches
+
+- **main** — versão estável
+- **dev** — branch de desenvolvimento
+- **feature/nome-da-tarefa** — branch individual de cada tarefa
+
+### Como trabalhar em uma tarefa
+
+```bash
+# 1. Atualize a dev local
+git checkout dev
+git pull origin dev
+
+# 2. Crie sua branch
+git checkout -b feature/nome-da-tarefa
+
+# 3. Faça commits
+git add .
+git commit -m "tipo: descrição curta"
+
+# 4. Envie para o GitHub
+git push origin feature/nome-da-tarefa
+```
+
+Abra um Pull Request de `feature/nome-da-tarefa` para `dev` e solicite revisão de outro membro.
+
+### Convenção de commits
+
+| Prefixo | Uso |
+|---------|-----|
+| `feat:` | Nova funcionalidade |
+| `fix:` | Correção de bug |
+| `docs:` | Documentação |
+| `style:` | Formatação, CSS |
+| `refactor:` | Refatoração sem mudança de comportamento |
+| `test:` | Adição ou correção de testes |
