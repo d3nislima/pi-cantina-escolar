@@ -12,10 +12,12 @@ from apps.vendas.models.venda import ItemVenda, JanelaAtendimento, Venda
 
 
 def _expirar_pedidos_vencidos():
-    agora = timezone.localtime(timezone.now()).time()
-    PedidoAntecipado.objects.filter(
-        status="pendente",
-        janela_atendimento__hora_fim__lt=agora,
+    agora_local = timezone.localtime(timezone.now())
+    hoje = agora_local.date()
+    hora_atual = agora_local.time()
+    PedidoAntecipado.objects.filter(status="pendente").filter(
+        Q(criado_em__date=hoje, janela_atendimento__hora_fim__lt=hora_atual)
+        | Q(criado_em__date__lt=hoje)
     ).update(status="expirado")
 
 
