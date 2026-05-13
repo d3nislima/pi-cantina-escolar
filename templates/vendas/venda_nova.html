@@ -154,6 +154,36 @@
     <p class="text-muted">Nenhum item adicionado.</p>
     {% endif %}
 
+    <hr style="margin: 20px 0; border-color: var(--border)">
+
+    <form method="post" action="{% url 'agendamento-novo' %}">
+      {% csrf_token %}
+      <p class="text-muted" style="font-size:13px; margin-bottom:12px">Ou agendar para retirada posterior:</p>
+
+      <div class="form-group">
+        <label class="form-label">Nome do Aluno</label>
+        <input type="text" name="nome_aluno" class="form-input" required maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Turma</label>
+        <input type="text" name="turma" class="form-input" required maxlength="20">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Período de Retirada</label>
+        <select name="janela_atendimento" class="form-input" required>
+          {% for janela in janelas %}
+          <option value="{{ janela.pk }}" {% if janela.pk == janela_atual_id %}selected{% endif %}>
+            {{ janela }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn">Agendar Pedido</button>
+    </form>
+
     <div style="margin-top: 16px">
       <a href="{% url 'venda-list' %}" class="btn">Cancelar</a>
     </div>
