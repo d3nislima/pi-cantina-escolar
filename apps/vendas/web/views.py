@@ -1,14 +1,19 @@
+from datetime import date
 from decimal import Decimal
 
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import CreateView, UpdateView
+
+from apps.vendas.web.forms import JanelaAtendimentoForm
 
 from apps.estoque.models.movimento import MovimentoEstoque
 from apps.estoque.models.produto import Produto
 from apps.vendas.models.venda import ItemVenda, JanelaAtendimento, Venda
 
+from apps.estoque.models.produto import Categoria
 
 def _janela_atual():
     agora = timezone.localtime(timezone.now()).time()
@@ -19,32 +24,33 @@ def _janela_atual():
     ).first()
 
 
-class VendaListView(ListView):
-    model = Venda
-    template_name = "vendas/venda_list.html"
-    context_object_name = "vendas"
-    ordering = ["-vendido_em"]
-    paginate_by = 50
-
-
 class NovaVendaView(View):
     template_name = "vendas/venda_nova.html"
 
     def get(self, request):
         carrinho = request.session.get("carrinho", [])
-        produtos = Produto.objects.filter(ativo=True).order_by("nome")
+        for item in carrinho:
+            item.setdefault("unidade_medida", "un")
         janelas = JanelaAtendimento.objects.filter(ativo=True)
         janela_atual = _janela_atual()
         total = sum(Decimal(str(item["subtotal"])) for item in carrinho)
 
+        categorias = Categoria.objects.filter(
+            produtos__ativo=True
+        ).prefetch_related('produtos').distinct().order_by('nome')
+
+        destaques = Produto.objects.filter(ativo=True, destaque=True).order_by('nome')
+
         return render(request, self.template_name, {
-            "produtos": produtos,
+            "categorias": categorias,
+            "destaques": destaques,
             "carrinho": carrinho,
             "janelas": janelas,
             "janela_atual_id": janela_atual.pk if janela_atual else None,
             "total": total,
             "formas_pagamento": Venda.PAGAMENTO_CHOICES,
             "modos_atendimento": Venda.MODO_CHOICES,
+            "data_hoje": date.today().isoformat(),
         })
 
 
@@ -72,6 +78,7 @@ class AdicionarItemView(View):
                 "preco_unitario": str(produto.preco_venda),
                 "quantidade": str(quantidade),
                 "subtotal": str(produto.preco_venda * quantidade),
+                "unidade_medida": produto.unidade_medida,
             })
 
         request.session["carrinho"] = carrinho
@@ -148,3 +155,63 @@ class FinalizarVendaView(View):
 
         request.session["carrinho"] = []
         return redirect("venda-list")
+
+
+class AjustarQuantidadeView(View):
+    def post(self, request):
+        produto_id = int(request.POST.get("produto_id"))
+        acao = request.POST.get("acao")
+        carrinho = request.session.get("carrinho", [])
+
+        for item in carrinho:
+            if item["produto_id"] == produto_id:
+                quantidade = Decimal(str(item["quantidade"]))
+                if acao == "mais":
+                    quantidade += Decimal("1")
+                else:
+                    quantidade -= Decimal("1")
+
+                if quantidade <= 0:
+                    carrinho = [i for i in carrinho if i["produto_id"] != produto_id]
+                else:
+                    item["quantidade"] = str(quantidade)
+                    item["subtotal"] = str(quantidade * Decimal(str(item["preco_unitario"])))
+                break
+
+        request.session["carrinho"] = carrinho
+        return redirect("venda-create")
+
+
+class JanelaCreateView(CreateView):
+    model = JanelaAtendimento
+    form_class = JanelaAtendimentoForm
+    template_name = "vendas/janela_form.html"
+    success_url = reverse_lazy("configuracoes")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo"] = "Nova Janela de Atendimento"
+        return ctx
+
+
+class JanelaUpdateView(UpdateView):
+    model = JanelaAtendimento
+    form_class = JanelaAtendimentoForm
+    template_name = "vendas/janela_form.html"
+    success_url = reverse_lazy("configuracoes")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo"] = f"Editar: {self.object.nome}"
+        return ctx
+
+
+class JanelaToggleAtivoView(View):
+    def post(self, request, pk):
+        try:
+            janela = JanelaAtendimento.objects.get(pk=pk)
+        except JanelaAtendimento.DoesNotExist:
+            return redirect("configuracoes")
+        janela.ativo = not janela.ativo
+        janela.save(update_fields=["ativo", "atualizado_em"])
+        return redirect("configuracoes")

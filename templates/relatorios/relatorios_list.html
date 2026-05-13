@@ -4,7 +4,34 @@
 
 {% block content %}
 <section class="dashboard">
-  <h1>Relatórios</h1>
-  <p>Relatórios operacionais e financeiros. (em desenvolvimento)</p>
+  <div class="page-header">
+    <h1>Relatórios</h1>
+  </div>
+
+  <div class="relatorios-grid">
+
+    <a href="{% url 'movimentacao-log' %}" class="relatorio-card">
+      <div class="relatorio-card-titulo">Histórico de Movimentações</div>
+      <div class="relatorio-card-descricao">Entradas, saídas e ajustes de estoque com saldo antes e depois.</div>
+    </a>
+
+    <a href="{% url 'venda-list' %}" class="relatorio-card">
+      <div class="relatorio-card-titulo">Histórico de Vendas</div>
+      <div class="relatorio-card-descricao">Todas as vendas realizadas com itens, forma de pagamento e totais.</div>
+    </a>
+
+    <div class="relatorio-card relatorio-card-indisponivel">
+      <div class="relatorio-card-titulo">Balanço do Período</div>
+      <div class="relatorio-card-descricao">Resumo de vendas, receita e custo por intervalo de datas.</div>
+      <span class="relatorio-badge">Em breve</span>
+    </div>
+
+    <div class="relatorio-card relatorio-card-indisponivel">
+      <div class="relatorio-card-titulo">Relatório Fiscal</div>
+      <div class="relatorio-card-descricao">Consolidado de vendas por forma de pagamento e período.</div>
+      <span class="relatorio-badge">Em breve</span>
+    </div>
+
+  </div>
 </section>
 {% endblock %}

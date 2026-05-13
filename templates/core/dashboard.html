@@ -1,40 +1,98 @@
 {% extends "base.html" %}
+{% load cantina_filters %}
 
 {% block title %}Cantina | Painel{% endblock %}
 
 {% block content %}
 <div class="dashboard-grid">
 
-  <!-- Bloco 1: Acesso rápido -->
+  <!-- Acesso rápido -->
   <section class="card">
     <h2 class="card-titulo">Acesso Rápido</h2>
     <div class="atalhos">
       <a href="{% url 'venda-create' %}" class="btn btn-destaque">+ Nova Venda</a>
-      <a href="{% url 'movimentacao-create' %}" class="btn">+ Nova Movimentação</a>
-      <a href="{% url 'produto-create' %}" class="btn">+ Novo Produto</a>
+      <a href="{% url 'entrada-estoque' %}?modo=existente" class="btn">+ Nova Movimentação</a>
+      <a href="{% url 'entrada-estoque' %}?modo=novo" class="btn">+ Novo Produto</a>
     </div>
   </section>
 
-  <!-- Bloco 2: Resumo do dia -->
+  <!-- Hoje -->
   <section class="card">
     <h2 class="card-titulo">Hoje</h2>
     <div class="resumo-grid">
       <div class="resumo-item">
-        <span class="resumo-valor">{{ vendas_hoje|default:"0" }}</span>
+        <span class="resumo-valor">{{ vendas_hoje }}</span>
         <span class="resumo-label">Vendas</span>
       </div>
       <div class="resumo-item">
-        <span class="resumo-valor">{{ entradas_hoje }}</span>
-        <span class="resumo-label">Entradas</span>
-      </div>
-      <div class="resumo-item">
-        <span class="resumo-valor">{{ saidas_hoje }}</span>
-        <span class="resumo-label">Saídas</span>
+        <span class="resumo-valor">{{ faturado_hoje|brl }}</span>
+        <span class="resumo-label">Faturado</span>
       </div>
     </div>
   </section>
 
-  <!-- Bloco 3: Estoque -->
+  <!-- Produtos mais vendidos hoje -->
+  <section class="card">
+    <h2 class="card-titulo">Mais vendidos hoje</h2>
+    {% if top_produtos %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Qtd</th>
+          <th>Receita</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in top_produtos %}
+        <tr>
+          <td>{{ item.produto__nome }}</td>
+          <td>{{ item.total_qty|qtd_unidade:item.produto__unidade_medida }}</td>
+          <td>{{ item.total_valor|brl }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nenhuma venda registrada hoje.</p>
+    {% endif %}
+  </section>
+
+  <!-- Últimas vendas -->
+  <section class="card">
+    <h2 class="card-titulo">Últimas vendas</h2>
+    {% if ultimas_vendas %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Horário</th>
+          <th>Itens</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for venda in ultimas_vendas %}
+        <tr>
+          <td>{{ venda.vendido_em|date:"H:i" }}</td>
+          <td>
+            {% for item in venda.itens.all %}
+              {{ item.produto.nome }} ({{ item.quantidade|qtd_unidade:item.produto.unidade_medida }}){% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </td>
+          <td>{{ venda.valor_total|brl }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="margin-top: 8px">
+      <a href="{% url 'venda-list' %}" class="btn btn-sm">Ver todas →</a>
+    </div>
+    {% else %}
+    <p class="text-muted">Nenhuma venda registrada hoje.</p>
+    {% endif %}
+  </section>
+
+  <!-- Estoque -->
   <section class="card">
     <h2 class="card-titulo">Estoque</h2>
     <p class="resumo-total">{{ total_produtos }} produto{{ total_produtos|pluralize }} ativo{{ total_produtos|pluralize }}</p>
