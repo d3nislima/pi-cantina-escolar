@@ -1,3 +1,4 @@
+import unittest
 from decimal import Decimal
 
 from django.test import TestCase
@@ -102,3 +103,55 @@ class AgendarPedidoViewTest(TestCase):
         })
         p.refresh_from_db()
         self.assertEqual(p.estoque_atual, estoque_antes)
+
+
+@unittest.skip("template criado na Task 5")
+class AgendamentoListViewTest(TestCase):
+    def test_lista_ok(self):
+        response = self.client.get(reverse("agendamento-list"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_exibe_apenas_pendentes(self):
+        j = _make_janela()
+        PedidoAntecipado.objects.create(
+            nome_aluno="Ana", turma="1A", janela_atendimento=j, status="pendente"
+        )
+        PedidoAntecipado.objects.create(
+            nome_aluno="Bruno", turma="2B", janela_atendimento=j, status="retirado"
+        )
+        response = self.client.get(reverse("agendamento-list"))
+        self.assertEqual(len(response.context["pedidos"]), 1)
+        self.assertEqual(response.context["pedidos"][0].nome_aluno, "Ana")
+
+    def test_busca_por_nome(self):
+        j = _make_janela()
+        PedidoAntecipado.objects.create(nome_aluno="Carlos", turma="1A", janela_atendimento=j, status="pendente")
+        PedidoAntecipado.objects.create(nome_aluno="Diana", turma="2B", janela_atendimento=j, status="pendente")
+        response = self.client.get(reverse("agendamento-list") + "?q=carlos")
+        self.assertEqual(len(response.context["pedidos"]), 1)
+
+    def test_busca_por_turma(self):
+        j = _make_janela()
+        PedidoAntecipado.objects.create(nome_aluno="Eduardo", turma="3C", janela_atendimento=j, status="pendente")
+        PedidoAntecipado.objects.create(nome_aluno="Fernanda", turma="1A", janela_atendimento=j, status="pendente")
+        response = self.client.get(reverse("agendamento-list") + "?q=3C")
+        self.assertEqual(len(response.context["pedidos"]), 1)
+
+
+class CancelarPedidoViewTest(TestCase):
+    def test_cancela_pedido_pendente(self):
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Gabi", turma="2A", janela_atendimento=j, status="pendente"
+        )
+        self.client.post(reverse("agendamento-cancelar", args=[pedido.pk]))
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.status, "expirado")
+
+    def test_cancela_redireciona_para_list(self):
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Hugo", turma="3B", janela_atendimento=j, status="pendente"
+        )
+        response = self.client.post(reverse("agendamento-cancelar", args=[pedido.pk]))
+        self.assertRedirects(response, reverse("agendamento-list"), fetch_redirect_response=False)
