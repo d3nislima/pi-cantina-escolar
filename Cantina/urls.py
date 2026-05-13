@@ -22,5 +22,6 @@ urlpatterns = [
     path("estoque/", include("apps.estoque.web.urls")),
     path("vendas/", include("apps.vendas.web.urls")),
     path("relatorios/", include("apps.relatorios.web.urls")),
+    path("agendamento/", include("apps.agendamento.web.urls")),
     path("admin/", admin.site.urls),
 ]
