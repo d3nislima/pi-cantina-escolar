@@ -6,8 +6,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.agendamento.models.pedido import ItemPedido, PedidoAntecipado
+from apps.estoque.models.movimento import MovimentoEstoque
 from apps.estoque.models.produto import Categoria, Produto
-from apps.vendas.models.venda import JanelaAtendimento
+from apps.vendas.models.venda import JanelaAtendimento, Venda
 
 
 def _make_produto(nome="Coxinha", preco=Decimal("5.00")):
@@ -154,4 +155,70 @@ class CancelarPedidoViewTest(TestCase):
             nome_aluno="Hugo", turma="3B", janela_atendimento=j, status="pendente"
         )
         response = self.client.post(reverse("agendamento-cancelar", args=[pedido.pk]))
+        self.assertRedirects(response, reverse("agendamento-list"), fetch_redirect_response=False)
+
+
+class RetiradaPedidoViewTest(TestCase):
+    def _make_pedido(self, produto, quantidade=Decimal("2")):
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Irene", turma="1C", janela_atendimento=j, status="pendente"
+        )
+        ItemPedido.objects.create(
+            pedido=pedido,
+            produto=produto,
+            quantidade=quantidade,
+            valor_unitario=produto.preco_venda,
+        )
+        return pedido
+
+    @unittest.skip("template criado na Task 5")
+    def test_get_exibe_form(self):
+        p = _make_produto()
+        pedido = self._make_pedido(p)
+        response = self.client.get(reverse("agendamento-retirada", args=[pedido.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "agendamento/retirada_form.html")
+
+    def test_post_cria_venda(self):
+        p = _make_produto()
+        pedido = self._make_pedido(p)
+        self.client.post(reverse("agendamento-retirada", args=[pedido.pk]), {
+            "forma_pagamento": "dinheiro",
+        })
+        self.assertEqual(Venda.objects.count(), 1)
+
+    def test_post_deduz_estoque(self):
+        p = _make_produto()
+        estoque_antes = p.estoque_atual
+        pedido = self._make_pedido(p, quantidade=Decimal("2"))
+        self.client.post(reverse("agendamento-retirada", args=[pedido.pk]), {
+            "forma_pagamento": "pix",
+        })
+        p.refresh_from_db()
+        self.assertEqual(p.estoque_atual, estoque_antes - Decimal("2"))
+
+    def test_post_cria_movimento_estoque(self):
+        p = _make_produto()
+        pedido = self._make_pedido(p)
+        self.client.post(reverse("agendamento-retirada", args=[pedido.pk]), {
+            "forma_pagamento": "dinheiro",
+        })
+        self.assertEqual(MovimentoEstoque.objects.filter(produto=p, operacao="saida").count(), 1)
+
+    def test_post_marca_pedido_retirado(self):
+        p = _make_produto()
+        pedido = self._make_pedido(p)
+        self.client.post(reverse("agendamento-retirada", args=[pedido.pk]), {
+            "forma_pagamento": "dinheiro",
+        })
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.status, "retirado")
+
+    def test_post_redireciona_para_list(self):
+        p = _make_produto()
+        pedido = self._make_pedido(p)
+        response = self.client.post(reverse("agendamento-retirada", args=[pedido.pk]), {
+            "forma_pagamento": "cartao",
+        })
         self.assertRedirects(response, reverse("agendamento-list"), fetch_redirect_response=False)
