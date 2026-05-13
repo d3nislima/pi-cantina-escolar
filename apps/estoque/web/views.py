@@ -28,6 +28,24 @@ class ProdutoCreateView(CreateView):
         ctx["titulo"] = "Novo Produto"
         return ctx
 
+    def form_valid(self, form):
+        produto = form.save()
+        quantidade_inicial = form.cleaned_data.get("quantidade_inicial")
+        if quantidade_inicial and quantidade_inicial > 0:
+            produto.estoque_atual = quantidade_inicial
+            produto.save(update_fields=["estoque_atual", "atualizado_em"])
+            MovimentoEstoque.objects.create(
+                produto=produto,
+                operacao="entrada",
+                origem="compra",
+                quantidade=quantidade_inicial,
+                valor_unitario=produto.preco_custo,
+                saldo_antes=0,
+                saldo_depois=quantidade_inicial,
+                data_movimento=timezone.now(),
+            )
+        return redirect(self.success_url)
+
 
 class ProdutoUpdateView(UpdateView):
     model = Produto

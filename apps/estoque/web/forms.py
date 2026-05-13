@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django import forms
 
 from apps.estoque.models.movimento import MovimentoEstoque
@@ -5,6 +7,14 @@ from apps.estoque.models.produto import Categoria, Produto
 
 
 class ProdutoForm(forms.ModelForm):
+    quantidade_inicial = forms.DecimalField(
+        required=False,
+        min_value=Decimal("0"),
+        label="Quantidade inicial",
+        help_text="Deixe em branco para começar com estoque 0.",
+        widget=forms.NumberInput(attrs={"class": "form-input", "step": "0.01"}),
+    )
+
     class Meta:
         model = Produto
         fields = [
@@ -20,7 +30,26 @@ class ProdutoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["categoria"].queryset = Categoria.objects.order_by("nome")
+        self.fields["categoria"].queryset = Categoria.objects.filter(ativo=True).order_by("nome")
+        for name, field in self.fields.items():
+            if name != "quantidade_inicial":
+                field.widget.attrs["class"] = "form-input"
+        if self.instance.pk:
+            del self.fields["quantidade_inicial"]
+
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ["nome", "categoria_pai", "descricao"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categoria_pai"].queryset = Categoria.objects.filter(
+            categoria_pai__isnull=True, ativo=True
+        ).order_by("nome")
+        self.fields["categoria_pai"].required = False
+        self.fields["descricao"].required = False
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-input"
 
