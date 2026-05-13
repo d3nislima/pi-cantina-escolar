@@ -82,6 +82,7 @@ class AdicionarItemView(View):
                 "preco_unitario": str(produto.preco_venda),
                 "quantidade": str(quantidade),
                 "subtotal": str(produto.preco_venda * quantidade),
+                "unidade_medida": produto.unidade_medida,
             })
 
         request.session["carrinho"] = carrinho

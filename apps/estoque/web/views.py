@@ -170,10 +170,10 @@ class CategoriaToggleAtivoView(View):
         try:
             categoria = Categoria.objects.get(pk=pk)
         except Categoria.DoesNotExist:
-            return redirect("categoria-list")
+            return redirect("configuracoes")
         categoria.ativo = not categoria.ativo
         categoria.save(update_fields=["ativo", "atualizado_em"])
-        return redirect("categoria-list")
+        return redirect("configuracoes")
 
 
 class ProdutoToggleView(View):

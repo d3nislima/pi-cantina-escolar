@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cantina_filters %}
 
 {% block title %}Cantina | Vendas{% endblock %}
 
@@ -26,12 +27,12 @@
         <td>{{ venda.vendido_em|date:"d/m/Y H:i" }}</td>
         <td>
           {% for item in venda.itens.all %}
-            {{ item.produto.nome }} ({{ item.quantidade }}){% if not forloop.last %}, {% endif %}
+            {{ item.produto.nome }} ({{ item.quantidade|qtd_unidade:item.produto.unidade_medida }}){% if not forloop.last %}, {% endif %}
           {% endfor %}
         </td>
         <td>{{ venda.janela_atendimento|default:"-" }}</td>
         <td>{{ venda.get_forma_pagamento_display }}</td>
-        <td>R$ {{ venda.valor_total }}</td>
+        <td>{{ venda.valor_total|brl }}</td>
       </tr>
       {% endfor %}
     </tbody>

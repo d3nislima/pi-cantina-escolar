@@ -31,7 +31,7 @@
         <td>{{ m.get_operacao_display }}</td>
         <td>{{ m.get_origem_display }}</td>
         <td>{{ m.quantidade|qtd_unidade:m.produto.unidade_medida }}</td>
-        <td class="text-muted">{{ m.saldo_antes }} → {{ m.saldo_depois }}</td>
+        <td class="text-muted">{{ m.saldo_antes|qtd_unidade:m.produto.unidade_medida }} → {{ m.saldo_depois|qtd_unidade:m.produto.unidade_medida }}</td>
         <td>{{ m.observacao|default:"-" }}</td>
       </tr>
       {% endfor %}
