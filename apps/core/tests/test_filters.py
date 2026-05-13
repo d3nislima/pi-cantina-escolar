@@ -21,3 +21,9 @@ class QtdUnidadeFilterTest(TestCase):
 
     def test_none_retorna_vazio(self):
         self.assertEqual(qtd_unidade(None, "un"), "")
+
+    def test_decimal_que_arredonda_para_inteiro(self):
+        self.assertEqual(qtd_unidade(Decimal("1.999"), "un"), "2 un.")
+
+    def test_decimal_pequeno_que_arredonda(self):
+        self.assertEqual(qtd_unidade(Decimal("0.995"), "kg"), "1 kg")

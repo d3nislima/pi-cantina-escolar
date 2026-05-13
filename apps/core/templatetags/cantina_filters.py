@@ -47,11 +47,12 @@ def qtd_unidade(quantidade, unidade):
     except Exception:
         return str(quantidade)
 
-    if qty == qty.to_integral_value():
-        qty_str = str(int(qty))
+    qty_r = Decimal(f"{qty:.2f}")
+    if qty_r == qty_r.to_integral_value():
+        qty_str = str(int(qty_r))
     else:
-        centavos = f"{qty:.2f}".split(".")[1].rstrip("0")
-        qty_str = f"{int(qty)},{centavos}"
+        centavos = str(qty_r).split(".")[1].rstrip("0")
+        qty_str = f"{int(qty_r)},{centavos}"
 
     abrev = UNIDADE_ABREV.get(unidade, unidade)
     return f"{qty_str} {abrev}"
