@@ -503,3 +503,89 @@ body {
   background: var(--bg);
   color: var(--muted);
 }
+
+/* === Inline creation panels === */
+.inline-create-panel {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.inline-create-fields {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.inline-create-fields .form-input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.inline-create-erro {
+  display: block;
+  margin-top: 6px;
+}
+
+/* === Toggles === */
+
+/* Pill toggle (ativo) */
+.toggle-pill {
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.toggle-pill::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.1s;
+}
+
+.toggle-pill-on {
+  background: var(--accent);
+}
+
+.toggle-pill-on::after {
+  left: 21px;
+}
+
+.toggle-pill-off {
+  background: var(--muted);
+}
+
+.toggle-pill-off::after {
+  left: 3px;
+}
+
+/* Star toggle (destaque) */
+.toggle-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.toggle-star-on {
+  color: #f59e0b;
+}
+
+.toggle-star-off {
+  color: var(--muted);
+}
