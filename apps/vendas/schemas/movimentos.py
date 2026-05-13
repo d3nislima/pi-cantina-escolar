@@ -58,6 +58,9 @@ class VendaCreateSchema(CantinaSchema):
     modo_atendimento: ModoAtendimento = ModoAtendimento.RAPIDO
     observacao: str | None = Field(default=None, max_length=255)
 
+    #validar saida negativa
+    #estoque negativo
+
     @model_validator(mode="after")
     def validar_itens(self):
         if not self.itens:
@@ -72,10 +75,10 @@ class VendaReadSchema(AuditadoSchema):
     vendido_em: datetime
     registrado_em: datetime
     janela_atendimento: JanelaAtendimento
-    modo_atendimento: ModoAtendimento
-    valor_bruto: Decimal
+    #modo_atendimento: ModoAtendimento       # 
+    valor_bruto: Decimal        # valor bruto == valor de custo??
     valor_descontos: Decimal = Field(default=Decimal("0"), ge=0)
     valor_total: Decimal
     valor_recebido: Decimal | None = None
-    troco: Decimal | None = None
+    #troco: Decimal | None = None        # validar troco
     observacao: str | None = None
