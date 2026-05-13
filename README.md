@@ -77,13 +77,42 @@ pi-cantina-escolar/
 
 ## Módulos
 
-| Módulo | Descrição |
-|--------|-----------|
-| `core` | Dashboard principal |
-| `estoque` | Cadastro de produtos, categorias e movimentações de estoque |
-| `vendas` | Registro de vendas e itens vendidos |
-| `relatorios` | Relatórios e indicadores |
-| `agendamento` | Fornecedores, contas a pagar e entregas agendadas |
+| Módulo | Descrição | Status |
+|--------|-----------|--------|
+| `core` | Dashboard com resumo do dia, estoque crítico e acesso rápido | ✅ Implementado |
+| `estoque` | CRUD de produtos e categorias, movimentações (entrada/saída/ajuste), busca por nome | ✅ Implementado |
+| `vendas` | Nova venda com carrinho, janelas de atendimento configuráveis, histórico de vendas | ✅ Implementado |
+| `relatorios` | Hub de relatórios, log de movimentações de estoque, histórico de vendas | ✅ Implementado |
+| `agendamento` | Pedido antecipado por aluno: agendamento, retirada e cancelamento | ✅ Implementado |
+
+## Funcionalidades
+
+### Estoque
+- Cadastro de produtos com categorias e unidade de medida
+- Entrada de estoque com atualização automática de preço de custo (compras)
+- Saídas e ajustes manuais de estoque
+- Alerta visual de produtos com estoque crítico no dashboard
+
+### Vendas
+- Fluxo de nova venda com carrinho em sessão
+- Janelas de atendimento configuráveis pelo admin
+- Detecção automática da janela pelo horário
+- Pagamento em dinheiro (com troco) ou outros meios
+- Histórico de vendas com total e itens
+
+### Pedido Antecipado
+- Alunos podem agendar pedidos antecipadamente
+- Pedidos expiram automaticamente ao final da janela de atendimento do dia
+- Cancelamento e retirada registrados com data e hora
+
+### Relatórios
+- Log completo de movimentações de estoque
+- Histórico de vendas realizadas
+- Dashboard com faturamento do dia e produtos mais vendidos
+
+### Configurações
+- Cadastro e ativação de janelas de atendimento
+- Gerenciamento de categorias de produtos
 
 ## Fluxo de trabalho no Git
 
