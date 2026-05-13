@@ -9,6 +9,7 @@ from apps.estoque.models.movimento import MovimentoEstoque
 from apps.estoque.models.produto import Produto
 from apps.vendas.models.venda import ItemVenda, JanelaAtendimento, Venda
 
+from apps.estoque.models.produto import Categoria
 
 def _janela_atual():
     agora = timezone.localtime(timezone.now()).time()
@@ -32,13 +33,19 @@ class NovaVendaView(View):
 
     def get(self, request):
         carrinho = request.session.get("carrinho", [])
-        produtos = Produto.objects.filter(ativo=True).order_by("nome")
         janelas = JanelaAtendimento.objects.filter(ativo=True)
         janela_atual = _janela_atual()
         total = sum(Decimal(str(item["subtotal"])) for item in carrinho)
 
+        categorias = Categoria.objects.filter(
+            produtos__ativo=True
+        ).prefetch_related('produtos').distinct().order_by('nome')
+
+        destaques = Produto.objects.filter(ativo=True, destaque=True).order_by('nome')
+
         return render(request, self.template_name, {
-            "produtos": produtos,
+            "categorias": categorias,
+            "destaques": destaques,
             "carrinho": carrinho,
             "janelas": janelas,
             "janela_atual_id": janela_atual.pk if janela_atual else None,

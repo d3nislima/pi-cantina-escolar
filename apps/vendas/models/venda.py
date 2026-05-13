@@ -11,8 +11,8 @@ class JanelaAtendimento(AuditadoModel):
     ativo = models.BooleanField(default=True, verbose_name="Ativo")
 
     class Meta:
-        verbose_name = "Janela de Atendimento"
-        verbose_name_plural = "Janelas de Atendimento"
+        verbose_name = "Período de Atendimento"
+        verbose_name_plural = "Períodos de Atendimento"
         ordering = ["hora_inicio"]
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Venda(AuditadoModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Janela de Atendimento",
+        verbose_name="Período de Atendimento",
     )
     modo_atendimento = models.CharField(
         max_length=20,
