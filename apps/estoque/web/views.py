@@ -28,6 +28,18 @@ class EstoqueListView(ListView):
     context_object_name = "produtos"
     ordering = ["nome"]
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = self.request.GET.get("q", "").strip()
+        if q:
+            qs = qs.filter(nome__icontains=q)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["q"] = self.request.GET.get("q", "").strip()
+        return ctx
+
 
 class ProdutoUpdateView(UpdateView):
     model = Produto
