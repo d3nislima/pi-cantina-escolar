@@ -39,3 +39,7 @@ desktop.ini
 
 # Superpowers brainstorm sessions
 .superpowers/
+
+# Docs gerados localmente (specs, plans, changelogs)
+docs/superpowers/
+docs/changelog/
