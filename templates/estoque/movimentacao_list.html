@@ -6,7 +6,7 @@
 <section class="dashboard">
   <div class="page-header">
     <h1>Movimentações de Estoque</h1>
-    <a href="{% url 'movimentacao-create' %}" class="btn btn-primary">+ Nova Movimentação</a>
+    <a href="{% url 'entrada-estoque' %}?modo=existente" class="btn btn-primary">+ Nova Movimentação</a>
   </div>
 
   {% if movimentacoes %}

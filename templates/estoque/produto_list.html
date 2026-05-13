@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cantina_filters %}
 
 {% block title %}Cantina | Produtos{% endblock %}
 
@@ -6,7 +7,7 @@
 <section class="dashboard">
   <div class="page-header">
     <h1>Produtos</h1>
-    <a href="{% url 'produto-create' %}" class="btn btn-primary">+ Novo Produto</a>
+    <a href="{% url 'entrada-estoque' %}?modo=novo" class="btn btn-primary">+ Novo Produto</a>
   </div>
 
   {% if produtos %}
@@ -16,11 +17,10 @@
         <th>Nome</th>
         <th>Categoria</th>
         <th>Unidade</th>
-        <th>Custo</th>
         <th>Preço de Venda</th>
-        <th>Estoque Atual</th>
-        <th>Estoque Mínimo</th>
+        <th>Estoque</th>
         <th>Ativo</th>
+        <th>Destaque</th>
         <th></th>
       </tr>
     </thead>
@@ -30,13 +30,26 @@
         <td>{{ produto.nome }}</td>
         <td>{{ produto.categoria }}</td>
         <td>{{ produto.get_unidade_medida_display }}</td>
-        <td>R$ {{ produto.preco_custo }}</td>
-        <td>R$ {{ produto.preco_venda }}</td>
+        <td>{{ produto.preco_venda|brl }}</td>
         <td {% if produto.estoque_atual <= produto.estoque_minimo %}class="text-alerta"{% endif %}>
           {{ produto.estoque_atual }}
         </td>
-        <td>{{ produto.estoque_minimo }}</td>
-        <td>{{ produto.ativo|yesno:"Sim,Não" }}</td>
+        <td>
+          <form method="post" action="{% url 'produto-toggle' produto.pk 'ativo' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm">
+              {% if produto.ativo %}Desativar{% else %}Ativar{% endif %}
+            </button>
+          </form>
+        </td>
+        <td>
+          <form method="post" action="{% url 'produto-toggle' produto.pk 'destaque' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm">
+              {% if produto.destaque %}Remover destaque{% else %}Destacar{% endif %}
+            </button>
+          </form>
+        </td>
         <td>
           <a href="{% url 'produto-update' produto.pk %}" class="btn btn-sm">Editar</a>
         </td>
