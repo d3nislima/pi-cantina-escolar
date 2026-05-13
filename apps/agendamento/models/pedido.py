@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 
 from apps.core.models.base import AuditadoModel
@@ -14,6 +16,7 @@ class PedidoAntecipado(AuditadoModel):
 
     nome_aluno = models.CharField(max_length=100, verbose_name="Nome do Aluno")
     turma = models.CharField(max_length=20, verbose_name="Turma")
+    data_atendimento = models.DateField(default=date.today, verbose_name="Data de Atendimento")
     janela_atendimento = models.ForeignKey(
         JanelaAtendimento,
         on_delete=models.PROTECT,

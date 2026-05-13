@@ -1,4 +1,5 @@
 import unittest
+from datetime import date, timedelta
 from decimal import Decimal
 
 from django.test import TestCase
@@ -220,3 +221,36 @@ class RetiradaPedidoViewTest(TestCase):
             "forma_pagamento": "cartao",
         })
         self.assertRedirects(response, reverse("agendamento-list"), fetch_redirect_response=False)
+
+
+class ExpiracaoPorDataTest(TestCase):
+    def test_pedido_de_ontem_expira(self):
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Alice", turma="1A", janela_atendimento=j,
+            status="pendente", data_atendimento=date.today() - timedelta(days=1),
+        )
+        self.client.get(reverse("agendamento-list"))
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.status, "expirado")
+
+    def test_pedido_de_amanha_nao_expira(self):
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Bob", turma="2B", janela_atendimento=j,
+            status="pendente", data_atendimento=date.today() + timedelta(days=1),
+        )
+        self.client.get(reverse("agendamento-list"))
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.status, "pendente")
+
+    def test_pedido_de_hoje_com_janela_aberta_nao_expira(self):
+        # hora_fim = 23:59 garante que a janela ainda está aberta
+        j = _make_janela()
+        pedido = PedidoAntecipado.objects.create(
+            nome_aluno="Carol", turma="3C", janela_atendimento=j,
+            status="pendente", data_atendimento=date.today(),
+        )
+        self.client.get(reverse("agendamento-list"))
+        pedido.refresh_from_db()
+        self.assertEqual(pedido.status, "pendente")

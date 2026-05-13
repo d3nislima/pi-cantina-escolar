@@ -171,6 +171,11 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label">Data de Retirada</label>
+        <input type="date" name="data_atendimento" class="form-input" value="{{ data_hoje }}" required>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">Período de Retirada</label>
         <select name="janela_atendimento" class="form-input" required>
           {% for janela in janelas %}
