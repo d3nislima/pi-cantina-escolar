@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -70,20 +71,23 @@ class EntradaEstoqueView(View):
                 produto.estoque_atual -= quantidade
             else:
                 produto.estoque_atual = quantidade
-            if origem == "compra" and valor_unitario > 0:
-                produto.preco_custo = valor_unitario
-            produto.save()
-            MovimentoEstoque.objects.create(
-                produto=produto,
-                operacao=operacao,
-                origem=origem,
-                quantidade=quantidade,
-                valor_unitario=valor_unitario,
-                saldo_antes=saldo_antes,
-                saldo_depois=produto.estoque_atual,
-                data_movimento=timezone.now(),
-                observacao=observacao,
-            )
+            with transaction.atomic():
+                update_fields = ["estoque_atual", "atualizado_em"]
+                if origem == "compra" and valor_unitario > 0:
+                    produto.preco_custo = valor_unitario
+                    update_fields.append("preco_custo")
+                produto.save(update_fields=update_fields)
+                MovimentoEstoque.objects.create(
+                    produto=produto,
+                    operacao=operacao,
+                    origem=origem,
+                    quantidade=quantidade,
+                    valor_unitario=valor_unitario,
+                    saldo_antes=saldo_antes,
+                    saldo_depois=produto.estoque_atual,
+                    data_movimento=timezone.now(),
+                    observacao=observacao,
+                )
             return redirect("produto-list")
         return render(request, self.template_name, {"form": form, "modo": "existente"})
 
@@ -96,19 +100,22 @@ class EntradaEstoqueView(View):
             origem = form.cleaned_data.get("origem", "compra")
             if quantidade_inicial and quantidade_inicial > 0:
                 produto.estoque_atual = quantidade_inicial
-                if origem == "compra" and valor_unitario > 0:
-                    produto.preco_custo = valor_unitario
-                produto.save()
-                MovimentoEstoque.objects.create(
-                    produto=produto,
-                    operacao="entrada",
-                    origem=origem,
-                    quantidade=quantidade_inicial,
-                    valor_unitario=valor_unitario,
-                    saldo_antes=Decimal("0"),
-                    saldo_depois=quantidade_inicial,
-                    data_movimento=timezone.now(),
-                )
+                with transaction.atomic():
+                    update_fields = ["estoque_atual", "atualizado_em"]
+                    if origem == "compra" and valor_unitario > 0:
+                        produto.preco_custo = valor_unitario
+                        update_fields.append("preco_custo")
+                    produto.save(update_fields=update_fields)
+                    MovimentoEstoque.objects.create(
+                        produto=produto,
+                        operacao=ORIGEM_PARA_OPERACAO.get(origem, "entrada"),
+                        origem=origem,
+                        quantidade=quantidade_inicial,
+                        valor_unitario=valor_unitario,
+                        saldo_antes=Decimal("0"),
+                        saldo_depois=quantidade_inicial,
+                        data_movimento=timezone.now(),
+                    )
             return redirect("produto-list")
         return render(request, self.template_name, {"form": form, "modo": "novo"})
 
