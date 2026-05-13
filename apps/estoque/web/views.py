@@ -53,7 +53,7 @@ class MovimentacaoCreateView(CreateView):
     model = MovimentoEstoque
     form_class = MovimentoEstoqueForm
     template_name = "estoque/movimentacao_form_avancado.html"
-    success_url = reverse_lazy("movimentacao-list")
+    success_url = reverse_lazy("produto-list")
 
     def form_valid(self, form):
         movimento = form.save(commit=False)
