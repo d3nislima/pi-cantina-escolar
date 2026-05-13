@@ -644,3 +644,15 @@ a.relatorio-card:hover {
   color: var(--muted);
   align-self: flex-start;
 }
+
+.qtd-controle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qtd-valor {
+  min-width: 48px;
+  text-align: center;
+  font-size: 14px;
+}

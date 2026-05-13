@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from apps.vendas.web.forms import JanelaAtendimentoForm
 
@@ -21,14 +21,6 @@ def _janela_atual():
         hora_inicio__lte=agora,
         hora_fim__gte=agora,
     ).first()
-
-
-class VendaListView(ListView):
-    model = Venda
-    template_name = "vendas/venda_list.html"
-    context_object_name = "vendas"
-    ordering = ["-vendido_em"]
-    paginate_by = 50
 
 
 class NovaVendaView(View):
@@ -161,6 +153,31 @@ class FinalizarVendaView(View):
 
         request.session["carrinho"] = []
         return redirect("venda-list")
+
+
+class AjustarQuantidadeView(View):
+    def post(self, request):
+        produto_id = int(request.POST.get("produto_id"))
+        acao = request.POST.get("acao")
+        carrinho = request.session.get("carrinho", [])
+
+        for item in carrinho:
+            if item["produto_id"] == produto_id:
+                quantidade = Decimal(str(item["quantidade"]))
+                if acao == "mais":
+                    quantidade += Decimal("1")
+                else:
+                    quantidade -= Decimal("1")
+
+                if quantidade <= 0:
+                    carrinho = [i for i in carrinho if i["produto_id"] != produto_id]
+                else:
+                    item["quantidade"] = str(quantidade)
+                    item["subtotal"] = str(quantidade * Decimal(str(item["preco_unitario"])))
+                break
+
+        request.session["carrinho"] = carrinho
+        return redirect("venda-create")
 
 
 class JanelaCreateView(CreateView):

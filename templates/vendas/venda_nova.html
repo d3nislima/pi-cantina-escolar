@@ -83,22 +83,30 @@
           <th>Produto</th>
           <th>Qtd</th>
           <th>Subtotal</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for item in carrinho %}
         <tr>
           <td>{{ item.nome }}</td>
-          <td>{{ item.quantidade|qtd_unidade:item.unidade_medida }}</td>
-          <td>{{ item.subtotal|brl }}</td>
           <td>
-            <form method="post" action="{% url 'venda-remover-item' %}">
-              {% csrf_token %}
-              <input type="hidden" name="produto_id" value="{{ item.produto_id }}">
-              <button type="submit" class="btn btn-sm btn-perigo">×</button>
-            </form>
+            <div class="qtd-controle">
+              <form method="post" action="{% url 'venda-ajustar-item' %}">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ item.produto_id }}">
+                <input type="hidden" name="acao" value="menos">
+                <button type="submit" class="btn btn-sm">−</button>
+              </form>
+              <span class="qtd-valor">{{ item.quantidade|qtd_unidade:item.unidade_medida }}</span>
+              <form method="post" action="{% url 'venda-ajustar-item' %}">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ item.produto_id }}">
+                <input type="hidden" name="acao" value="mais">
+                <button type="submit" class="btn btn-sm">+</button>
+              </form>
+            </div>
           </td>
+          <td>{{ item.subtotal|brl }}</td>
         </tr>
         {% endfor %}
       </tbody>
