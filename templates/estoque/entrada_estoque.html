@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load cantina_filters %}
+
+{% block title %}Cantina | Entrada de Estoque{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Entrada de Estoque</h1>
+  </div>
+
+  <div class="categorias-tabs" style="margin-bottom: 24px;">
+    <a href="?modo=existente" class="tab-btn {% if modo == 'existente' %}tab-ativa{% endif %}">Produto existente</a>
+    <a href="?modo=novo" class="tab-btn {% if modo == 'novo' %}tab-ativa{% endif %}">Novo produto</a>
+  </div>
+
+  <form method="post" class="form">
+    {% csrf_token %}
+    <input type="hidden" name="modo" value="{{ modo }}">
+
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}
+        <span class="form-hint">{{ field.help_text }}</span>
+      {% endif %}
+      {% if field.errors %}
+        {% for error in field.errors %}
+          <span class="form-error">{{ error }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        {% if modo == 'novo' %}Criar Produto{% else %}Registrar Movimentação{% endif %}
+      </button>
+      <a href="{% url 'produto-list' %}" class="btn">Voltar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
