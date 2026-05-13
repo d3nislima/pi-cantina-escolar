@@ -1,9 +1,12 @@
 from decimal import Decimal
 
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import CreateView, ListView, UpdateView
+
+from apps.vendas.web.forms import JanelaAtendimentoForm
 
 from apps.estoque.models.movimento import MovimentoEstoque
 from apps.estoque.models.produto import Produto
@@ -79,6 +82,7 @@ class AdicionarItemView(View):
                 "preco_unitario": str(produto.preco_venda),
                 "quantidade": str(quantidade),
                 "subtotal": str(produto.preco_venda * quantidade),
+                "unidade_medida": produto.unidade_medida,
             })
 
         request.session["carrinho"] = carrinho
@@ -155,3 +159,38 @@ class FinalizarVendaView(View):
 
         request.session["carrinho"] = []
         return redirect("venda-list")
+
+
+class JanelaCreateView(CreateView):
+    model = JanelaAtendimento
+    form_class = JanelaAtendimentoForm
+    template_name = "vendas/janela_form.html"
+    success_url = reverse_lazy("configuracoes")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo"] = "Nova Janela de Atendimento"
+        return ctx
+
+
+class JanelaUpdateView(UpdateView):
+    model = JanelaAtendimento
+    form_class = JanelaAtendimentoForm
+    template_name = "vendas/janela_form.html"
+    success_url = reverse_lazy("configuracoes")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["titulo"] = f"Editar: {self.object.nome}"
+        return ctx
+
+
+class JanelaToggleAtivoView(View):
+    def post(self, request, pk):
+        try:
+            janela = JanelaAtendimento.objects.get(pk=pk)
+        except JanelaAtendimento.DoesNotExist:
+            return redirect("configuracoes")
+        janela.ativo = not janela.ativo
+        janela.save(update_fields=["ativo", "atualizado_em"])
+        return redirect("configuracoes")

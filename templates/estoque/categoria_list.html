@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Cantina | Categorias{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Categorias</h1>
+    <a href="{% url 'categoria-create' %}" class="btn btn-primary">+ Nova Categoria</a>
+  </div>
+
+  {% if categorias %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Categoria Pai</th>
+        <th>Produtos</th>
+        <th>Ativo</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for categoria in categorias %}
+      <tr {% if not categoria.ativo %}class="row-inativo"{% endif %}>
+        <td>{{ categoria.nome }}</td>
+        <td>{{ categoria.categoria_pai.nome|default:"—" }}</td>
+        <td>{{ categoria.num_produtos }}</td>
+        <td>
+          <form method="post" action="{% url 'categoria-toggle-ativo' categoria.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm">
+              {% if categoria.ativo %}Desativar{% else %}Ativar{% endif %}
+            </button>
+          </form>
+        </td>
+        <td>
+          <a href="{% url 'categoria-update' categoria.pk %}" class="btn btn-sm">Editar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted">Nenhuma categoria cadastrada.</p>
+  {% endif %}
+</section>
+{% endblock %}

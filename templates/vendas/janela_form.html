@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Cantina | Nova Movimentação{% endblock %}
+{% block title %}Cantina | {{ titulo }}{% endblock %}
 
 {% block content %}
 <section class="dashboard">
   <div class="page-header">
-    <h1>Nova Movimentação</h1>
-    <a href="{% url 'movimentacao-list' %}" class="btn">Voltar</a>
+    <h1>{{ titulo }}</h1>
+    <a href="{% url 'configuracoes' %}" class="btn">Voltar</a>
   </div>
 
   <form method="post" class="form">
@@ -21,12 +21,15 @@
           <span class="form-error">{{ error }}</span>
         {% endfor %}
       {% endif %}
+      {% if field.help_text %}
+        <span class="form-hint">{{ field.help_text }}</span>
+      {% endif %}
     </div>
     {% endfor %}
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Registrar</button>
-      <a href="{% url 'movimentacao-list' %}" class="btn">Cancelar</a>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="{% url 'configuracoes' %}" class="btn">Cancelar</a>
     </div>
   </form>
 </section>

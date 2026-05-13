@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Cantina | Configurações{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Configurações</h1>
+  </div>
+
+  <!-- Bloco: Categorias -->
+  <div style="margin-bottom: 40px;">
+    <div class="page-header" style="margin-bottom: 16px;">
+      <h2 style="margin:0; font-size:18px; color: var(--accent);">Categorias</h2>
+      <a href="{% url 'categoria-create' %}" class="btn btn-primary">+ Nova Categoria</a>
+    </div>
+
+    {% if categorias %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Categoria Pai</th>
+          <th>Ativo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in categorias %}
+        <tr {% if not cat.ativo %}class="row-inativo"{% endif %}>
+          <td>{{ cat.nome }}</td>
+          <td>{{ cat.categoria_pai.nome|default:"-" }}</td>
+          <td>
+            <form method="post" action="{% url 'categoria-toggle-ativo' cat.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="toggle-pill {% if cat.ativo %}toggle-pill-on{% else %}toggle-pill-off{% endif %}"></button>
+            </form>
+          </td>
+          <td>
+            <a href="{% url 'categoria-update' cat.pk %}" class="btn btn-sm">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nenhuma categoria cadastrada.</p>
+    {% endif %}
+  </div>
+
+  <!-- Bloco: Janelas de Atendimento -->
+  <div style="margin-bottom: 40px;">
+    <div class="page-header" style="margin-bottom: 16px;">
+      <h2 style="margin:0; font-size:18px; color: var(--accent);">Janelas de Atendimento</h2>
+      <a href="{% url 'janela-create' %}" class="btn btn-primary">+ Nova Janela</a>
+    </div>
+
+    {% if janelas %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Início</th>
+          <th>Fim</th>
+          <th>Ativo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for janela in janelas %}
+        <tr {% if not janela.ativo %}class="row-inativo"{% endif %}>
+          <td>{{ janela.nome }}</td>
+          <td>{{ janela.hora_inicio|time:"H:i" }}</td>
+          <td>{{ janela.hora_fim|time:"H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'janela-toggle-ativo' janela.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="toggle-pill {% if janela.ativo %}toggle-pill-on{% else %}toggle-pill-off{% endif %}"></button>
+            </form>
+          </td>
+          <td>
+            <a href="{% url 'janela-update' janela.pk %}" class="btn btn-sm">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nenhuma janela de atendimento cadastrada.</p>
+    {% endif %}
+  </div>
+
+  <!-- Bloco: Usuários -->
+  <div>
+    <h2 style="margin:0 0 12px; font-size:18px; color: var(--accent);">Usuários</h2>
+    <p class="text-muted">Gerenciamento de usuários será implementado em versão futura.</p>
+  </div>
+
+</section>
+{% endblock %}

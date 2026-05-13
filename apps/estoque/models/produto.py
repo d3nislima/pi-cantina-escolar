@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.core.models.base import AuditadoModel
@@ -14,6 +15,7 @@ class Categoria(AuditadoModel):
         related_name="subcategorias",
         verbose_name="Categoria Pai",
     )
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
 
     class Meta:
         verbose_name = "Categoria"
@@ -24,6 +26,16 @@ class Categoria(AuditadoModel):
         if self.categoria_pai:
             return f"{self.categoria_pai.nome} > {self.nome}"
         return self.nome
+
+    def clean(self):
+        if self.categoria_pai and self.categoria_pai.categoria_pai is not None:
+            raise ValidationError(
+                {"categoria_pai": "Não é permitido criar subcategoria de subcategoria."}
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Produto(AuditadoModel):

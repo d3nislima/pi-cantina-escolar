@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% load cantina_filters %}
 
-{% block title %}Cantina | Produtos{% endblock %}
+{% block title %}Cantina | Estoque{% endblock %}
 
 {% block content %}
 <section class="dashboard">
   <div class="page-header">
-    <h1>Produtos</h1>
-    <a href="{% url 'entrada-estoque' %}?modo=novo" class="btn btn-primary">+ Novo Produto</a>
+    <h1>Estoque</h1>
+    <div style="display:flex;gap:8px;">
+      <a href="{% url 'entrada-estoque' %}?modo=existente" class="btn">+ Nova Movimentação</a>
+      <a href="{% url 'entrada-estoque' %}?modo=novo" class="btn btn-primary">+ Novo Produto</a>
+    </div>
   </div>
 
   {% if produtos %}
@@ -16,9 +19,8 @@
       <tr>
         <th>Nome</th>
         <th>Categoria</th>
-        <th>Unidade</th>
-        <th>Preço de Venda</th>
         <th>Estoque</th>
+        <th>Preço de Venda</th>
         <th>Ativo</th>
         <th>Destaque</th>
         <th></th>
@@ -29,24 +31,21 @@
       <tr {% if not produto.ativo %}class="row-inativo"{% endif %}>
         <td>{{ produto.nome }}</td>
         <td>{{ produto.categoria }}</td>
-        <td>{{ produto.get_unidade_medida_display }}</td>
-        <td>{{ produto.preco_venda|brl }}</td>
         <td {% if produto.estoque_atual <= produto.estoque_minimo %}class="text-alerta"{% endif %}>
-          {{ produto.estoque_atual }}
+          {{ produto.estoque_atual|qtd_unidade:produto.unidade_medida }}
         </td>
+        <td>{{ produto.preco_venda|brl }}</td>
         <td>
           <form method="post" action="{% url 'produto-toggle' produto.pk 'ativo' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm">
-              {% if produto.ativo %}Desativar{% else %}Ativar{% endif %}
-            </button>
+            <button type="submit" class="toggle-pill {% if produto.ativo %}toggle-pill-on{% else %}toggle-pill-off{% endif %}"></button>
           </form>
         </td>
         <td>
           <form method="post" action="{% url 'produto-toggle' produto.pk 'destaque' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm">
-              {% if produto.destaque %}Remover destaque{% else %}Destacar{% endif %}
+            <button type="submit" class="toggle-star {% if produto.destaque %}toggle-star-on{% else %}toggle-star-off{% endif %}">
+              {% if produto.destaque %}★{% else %}☆{% endif %}
             </button>
           </form>
         </td>
