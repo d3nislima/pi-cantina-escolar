@@ -15,6 +15,7 @@ class ProdutoForm(forms.ModelForm):
             "preco_venda",
             "estoque_minimo",
             "ativo",
+            "destaque",
         ]
 
     def __init__(self, *args, **kwargs):
