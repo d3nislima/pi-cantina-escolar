@@ -85,9 +85,8 @@ class RetiradaPedidoView(View):
         forma_pagamento = request.POST.get("forma_pagamento")
         valor_recebido = request.POST.get("valor_recebido") or None
 
-        valor_total = sum(
-            item.valor_total for item in pedido.itens.select_related("produto").all()
-        )
+        itens = list(pedido.itens.select_related("produto").all())
+        valor_total = sum(item.valor_total for item in itens)
         troco = None
         if valor_recebido and forma_pagamento == "dinheiro":
             troco = Decimal(str(valor_recebido)) - valor_total
@@ -103,7 +102,7 @@ class RetiradaPedidoView(View):
             vendido_em=timezone.now(),
         )
 
-        for item in pedido.itens.select_related("produto").all():
+        for item in itens:
             produto = item.produto
             ItemVenda.objects.create(
                 venda=venda,
