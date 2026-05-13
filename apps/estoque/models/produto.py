@@ -79,6 +79,7 @@ class Produto(AuditadoModel):
         verbose_name="Estoque Atual",
     )
     ativo = models.BooleanField(default=True, verbose_name="Ativo")
+    destaque = models.BooleanField(default=False, verbose_name="Destaque")
 
     class Meta:
         verbose_name = "Produto"
