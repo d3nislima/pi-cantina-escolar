@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load cantina_filters %}
+
+{% block title %}Cantina | Retirada{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Confirmar Retirada</h1>
+  </div>
+
+  <div class="card" style="max-width:560px">
+    <h2 class="card-titulo">{{ pedido.nome_aluno }} — {{ pedido.turma }}</h2>
+    <p class="text-muted">{{ pedido.janela_atendimento }}</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Qtd</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in pedido.itens.all %}
+        <tr>
+          <td>{{ item.produto.nome }}</td>
+          <td>{{ item.quantidade|qtd_unidade:item.produto.unidade_medida }}</td>
+          <td>{{ item.valor_total|brl }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <form method="post" style="margin-top:24px">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Forma de Pagamento</label>
+        <select name="forma_pagamento" class="form-input" required>
+          <option value="">Selecione...</option>
+          {% for valor, label in formas_pagamento %}
+          <option value="{{ valor }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Valor Recebido (dinheiro)</label>
+        <input type="number" name="valor_recebido" step="0.01" min="0" class="form-input">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-destaque">Confirmar Retirada</button>
+        <a href="{% url 'agendamento-list' %}" class="btn">Voltar</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

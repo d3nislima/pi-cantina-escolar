@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load cantina_filters %}
+
+{% block title %}Cantina | Agendamentos{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="page-header">
+    <h1>Pedidos Antecipados</h1>
+  </div>
+
+  <form method="get" class="busca-form" style="display:flex; gap:8px; align-items:center; margin-bottom:20px">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nome ou turma..." class="form-input" style="max-width:320px">
+    <button type="submit" class="btn">Buscar</button>
+    {% if q %}<a href="{% url 'agendamento-list' %}" class="btn">Limpar</a>{% endif %}
+  </form>
+
+  {% if pedidos %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Aluno</th>
+        <th>Turma</th>
+        <th>Período</th>
+        <th>Itens</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pedido in pedidos %}
+      <tr>
+        <td>{{ pedido.nome_aluno }}</td>
+        <td>{{ pedido.turma }}</td>
+        <td>{{ pedido.janela_atendimento.nome }}</td>
+        <td>
+          {% for item in pedido.itens.all %}
+            {{ item.produto.nome }} ({{ item.quantidade|qtd_unidade:item.produto.unidade_medida }}){% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </td>
+        <td style="white-space:nowrap">
+          <a href="{% url 'agendamento-retirada' pedido.pk %}" class="btn btn-sm btn-primary">Retirar</a>
+          <form method="post" action="{% url 'agendamento-cancelar' pedido.pk %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm">Cancelar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted" style="margin-top:20px">
+    {% if q %}Nenhum pedido encontrado para "{{ q }}".{% else %}Nenhum pedido pendente.{% endif %}
+  </p>
+  {% endif %}
+</section>
+{% endblock %}

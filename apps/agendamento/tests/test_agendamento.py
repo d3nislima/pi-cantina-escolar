@@ -22,8 +22,8 @@ def _make_produto(nome="Coxinha", preco=Decimal("5.00")):
 def _make_janela(nome="Recreio"):
     return JanelaAtendimento.objects.create(
         nome=nome,
-        hora_inicio="10:00",
-        hora_fim="10:30",
+        hora_inicio="00:00",
+        hora_fim="23:59",
         ativo=True,
     )
 
@@ -106,7 +106,6 @@ class AgendarPedidoViewTest(TestCase):
         self.assertEqual(p.estoque_atual, estoque_antes)
 
 
-@unittest.skip("template criado na Task 5")
 class AgendamentoListViewTest(TestCase):
     def test_lista_ok(self):
         response = self.client.get(reverse("agendamento-list"))
@@ -172,7 +171,6 @@ class RetiradaPedidoViewTest(TestCase):
         )
         return pedido
 
-    @unittest.skip("template criado na Task 5")
     def test_get_exibe_form(self):
         p = _make_produto()
         pedido = self._make_pedido(p)
