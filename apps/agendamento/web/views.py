@@ -16,8 +16,8 @@ def _expirar_pedidos_vencidos():
     hoje = agora_local.date()
     hora_atual = agora_local.time()
     PedidoAntecipado.objects.filter(status="pendente").filter(
-        Q(criado_em__date=hoje, janela_atendimento__hora_fim__lt=hora_atual)
-        | Q(criado_em__date__lt=hoje)
+        Q(data_atendimento__lt=hoje)
+        | Q(data_atendimento=hoje, janela_atendimento__hora_fim__lt=hora_atual)
     ).update(status="expirado")
 
 
@@ -44,18 +44,26 @@ class AgendarPedidoView(View):
         if not carrinho:
             return redirect("venda-create")
 
+        from datetime import date as date_type
         nome_aluno = request.POST.get("nome_aluno", "").strip()
         turma = request.POST.get("turma", "").strip()
         janela_id = request.POST.get("janela_atendimento")
+        data_str = request.POST.get("data_atendimento", "").strip()
 
         try:
             janela = JanelaAtendimento.objects.get(pk=janela_id)
         except JanelaAtendimento.DoesNotExist:
             return redirect("venda-create")
 
+        try:
+            data_atendimento = date_type.fromisoformat(data_str) if data_str else date_type.today()
+        except ValueError:
+            data_atendimento = date_type.today()
+
         pedido = PedidoAntecipado.objects.create(
             nome_aluno=nome_aluno,
             turma=turma,
+            data_atendimento=data_atendimento,
             janela_atendimento=janela,
             status="pendente",
         )

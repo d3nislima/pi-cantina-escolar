@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from django.shortcuts import redirect, render
@@ -49,6 +50,7 @@ class NovaVendaView(View):
             "total": total,
             "formas_pagamento": Venda.PAGAMENTO_CHOICES,
             "modos_atendimento": Venda.MODO_CHOICES,
+            "data_hoje": date.today().isoformat(),
         })
 
 

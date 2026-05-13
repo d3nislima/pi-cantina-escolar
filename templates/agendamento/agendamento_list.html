@@ -21,6 +21,7 @@
       <tr>
         <th>Aluno</th>
         <th>Turma</th>
+        <th>Data</th>
         <th>Período</th>
         <th>Itens</th>
         <th></th>
@@ -31,6 +32,7 @@
       <tr>
         <td>{{ pedido.nome_aluno }}</td>
         <td>{{ pedido.turma }}</td>
+        <td>{{ pedido.data_atendimento|date:"d/m/Y" }}</td>
         <td>{{ pedido.janela_atendimento.nome }}</td>
         <td>
           {% for item in pedido.itens.all %}
