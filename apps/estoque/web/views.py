@@ -111,7 +111,7 @@ class CategoriaCreateView(CreateView):
     model = Categoria
     form_class = CategoriaForm
     template_name = "estoque/categoria_form.html"
-    success_url = reverse_lazy("categoria-list")
+    success_url = reverse_lazy("configuracoes")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -123,7 +123,7 @@ class CategoriaUpdateView(UpdateView):
     model = Categoria
     form_class = CategoriaForm
     template_name = "estoque/categoria_form.html"
-    success_url = reverse_lazy("categoria-list")
+    success_url = reverse_lazy("configuracoes")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
