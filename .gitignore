@@ -36,3 +36,6 @@ desktop.ini
 
 # Claude Code local
 .claude/
+
+# Superpowers brainstorm sessions
+.superpowers/
