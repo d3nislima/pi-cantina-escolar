@@ -7,7 +7,6 @@ from .views import (
     CategoriaUpdateView,
     EstoqueListView,
     MovimentacaoCreateView,
-    MovimentacaoListView,
     ProdutoCreateView,
     ProdutoToggleView,
     ProdutoUpdateView,
