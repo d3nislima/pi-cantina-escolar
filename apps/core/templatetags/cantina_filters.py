@@ -20,12 +20,8 @@ def brl(value):
     centavos = value - Decimal(inteiro)
 
     inteiro_fmt = f"{inteiro:,}".replace(",", ".")
-
-    if centavos == 0:
-        resultado = f"R$ {inteiro_fmt}"
-    else:
-        centavos_str = f"{centavos:.2f}"[2:]
-        resultado = f"R$ {inteiro_fmt},{centavos_str}"
+    centavos_str = f"{centavos:.2f}"[2:]
+    resultado = f"R$ {inteiro_fmt},{centavos_str}"
 
     return f"-{resultado}" if negativo else resultado
 

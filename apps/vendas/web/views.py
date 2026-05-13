@@ -36,6 +36,8 @@ class NovaVendaView(View):
 
     def get(self, request):
         carrinho = request.session.get("carrinho", [])
+        for item in carrinho:
+            item.setdefault("unidade_medida", "un")
         janelas = JanelaAtendimento.objects.filter(ativo=True)
         janela_atual = _janela_atual()
         total = sum(Decimal(str(item["subtotal"])) for item in carrinho)
