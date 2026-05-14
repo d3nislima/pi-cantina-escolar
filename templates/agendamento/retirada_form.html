@@ -13,6 +13,12 @@
     <h2 class="card-titulo">{{ pedido.nome_aluno }} — {{ pedido.turma }}</h2>
     <p class="text-muted">{{ pedido.janela_atendimento }}</p>
 
+{% if erro %}
+<div class="alerta-estoque" role="alert">
+  <strong>Retirada não realizada:</strong> {{ erro }}
+</div>
+{% endif %}
+
     <table class="table">
       <thead>
         <tr>

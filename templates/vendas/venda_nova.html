@@ -62,6 +62,12 @@
   <!-- Painel direito: carrinho -->
   <aside class="card carrinho">
 
+{% if erro %}
+<div class="alerta-estoque" role="alert">
+  <strong>Venda não realizada:</strong> {{ erro }}
+</div>
+{% endif %}
+
     <div class="janela-badge-wrapper">
       {% if janela_atual_id %}
         {% for janela in janelas %}

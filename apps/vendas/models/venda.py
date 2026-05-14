@@ -55,7 +55,7 @@ class Venda(AuditadoModel):
     valor_descontos = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Valor Descontos")
     valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Valor Total")
     valor_recebido = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Valor Recebido")
-    #troco = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Troco")
+    troco = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Troco")
     vendido_em = models.DateTimeField(verbose_name="Vendido em")
     registrado_em = models.DateTimeField(auto_now_add=True, verbose_name="Registrado em")
     observacao = models.CharField(max_length=255, blank=True, null=True, verbose_name="Observação")

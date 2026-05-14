@@ -6,9 +6,9 @@ from django.utils import timezone
 from django.views import View
 
 from apps.agendamento.models.pedido import ItemPedido, PedidoAntecipado
-from apps.estoque.models.movimento import MovimentoEstoque
 from apps.estoque.models.produto import Produto
 from apps.vendas.models.venda import ItemVenda, JanelaAtendimento, Venda
+from apps.vendas.services import EstoqueInsuficienteError, realizar_venda
 
 
 def _expirar_pedidos_vencidos():
@@ -81,6 +81,10 @@ class AgendarPedidoView(View):
 
 
 class RetiradaPedidoView(View):
+    """
+    Usa realizar_venda() do service, exatamente como a venda direta.
+    Garante que pedido antecipado também valida estoque no momento da retirada.
+    """
     template_name = "agendamento/retirada_form.html"
 
     def get(self, request, pk):
@@ -93,46 +97,38 @@ class RetiradaPedidoView(View):
     def post(self, request, pk):
         pedido = get_object_or_404(PedidoAntecipado, pk=pk, status="pendente")
         forma_pagamento = request.POST.get("forma_pagamento")
-        valor_recebido = request.POST.get("valor_recebido") or None
+        valor_recebido_raw = request.POST.get("valor_recebido") or None
+        valor_recebido = Decimal(str(valor_recebido_raw)) if valor_recebido_raw else None
 
-        itens = list(pedido.itens.select_related("produto").all())
-        valor_total = sum(item.valor_total for item in itens)
-        troco = None
-        if valor_recebido and forma_pagamento == "dinheiro":
-            troco = Decimal(str(valor_recebido)) - valor_total
+        # Monta carrinho no formato esperado pelo service
+        itens_carrinho = [
+            {
+                "produto_id": item.produto_id,
+                "quantidade": str(item.quantidade),
+                "preco_unitario": str(item.valor_unitario),
+                "subtotal": str(item.valor_total),
+            }
+            for item in pedido.itens.select_related("produto").all()
+        ]
 
-        venda = Venda.objects.create(
-            forma_pagamento=forma_pagamento,
-            janela_atendimento=pedido.janela_atendimento,
-            modo_atendimento="pedido_antecipado",
-            valor_bruto=valor_total,
-            valor_total=valor_total,
-            valor_recebido=Decimal(str(valor_recebido)) if valor_recebido else None,
-            troco=troco,
-            vendido_em=timezone.now(),
-        )
-
-        for item in itens:
-            produto = item.produto
-            ItemVenda.objects.create(
-                venda=venda,
-                produto=produto,
-                quantidade=item.quantidade,
-                valor_unitario=item.valor_unitario,
-                valor_total=item.valor_total,
+        try:
+            realizar_venda(
+                itens_carrinho=itens_carrinho,
+                forma_pagamento=forma_pagamento,
+                modo_atendimento="pedido_antecipado",
+                janela=pedido.janela_atendimento,
+                valor_recebido=valor_recebido,
             )
-            MovimentoEstoque.objects.create(
-                produto=produto,
-                operacao="saida",
-                origem="venda",
-                quantidade=item.quantidade,
-                valor_unitario=item.valor_unitario,
-                saldo_antes=produto.estoque_atual,
-                saldo_depois=produto.estoque_atual - item.quantidade,
-                data_movimento=venda.vendido_em,
+        except EstoqueInsuficienteError as e:
+            erro = (
+                f"Não foi possível retirar o pedido: estoque insuficiente para "
+                f"'{e.produto_nome}' (disponível: {e.disponivel} un., solicitado: {e.solicitado} un.)."
             )
-            produto.estoque_atual -= item.quantidade
-            produto.save()
+            return render(request, self.template_name, {
+                "pedido": pedido,
+                "formas_pagamento": Venda.PAGAMENTO_CHOICES,
+                "erro": erro,
+            })
 
         pedido.status = "retirado"
         pedido.save(update_fields=["status", "atualizado_em"])
